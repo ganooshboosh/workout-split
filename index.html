@@ -3,128 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Training Split</title>
+<title>Overload Tracker</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap');
 
   :root {
-    --bg: #0d0d0d;
-    --surface: #141414;
-    --border: #1f1f1f;
-    --text: #e2e2e2;
-    --muted: #555;
-    --upper-a: #C8F560;
-    --lower-a: #60C8F5;
-    --upper-b: #F5A260;
-    --lower-b: #C060F5;
+    --bg: #0a0a0a;
+    --surface: #111;
+    --border: #1c1c1c;
+    --text: #ddd;
+    --muted: #444;
+    --dim: #2a2a2a;
+    --ua: #C8F560;
+    --la: #60C8F5;
+    --ub: #F5A260;
+    --lb: #C060F5;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'DM Mono', monospace;
     min-height: 100vh;
-    padding: 24px 16px 48px;
     max-width: 480px;
     margin: 0 auto;
+    padding: 0 0 80px;
   }
 
-  header {
-    margin-bottom: 32px;
+  /* Header */
+  .header {
+    padding: 28px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
   }
 
-  .label {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 32px;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1;
+  .header-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
     margin-bottom: 16px;
   }
 
-  .rules {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 28px;
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 0.05em;
+    color: #fff;
+    line-height: 1;
   }
 
-  .rules-title {
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .rule {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    margin-bottom: 8px;
-    font-size: 12px;
-    color: #888;
-    line-height: 1.5;
-  }
-
-  .rule:last-child { margin-bottom: 0; }
-
-  .rule-num {
-    font-weight: 500;
-    color: #444;
-    flex-shrink: 0;
-    width: 16px;
-  }
-
-  .schedule {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 28px;
-  }
-
-  .sched-day {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 8px;
-    text-align: center;
-  }
-
-  .sched-day-name {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
-  }
-
-  .sched-session {
+  .week-badge {
     font-size: 11px;
-    font-weight: 500;
-    line-height: 1.3;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-align: right;
   }
 
-  .tab-bar {
+  .week-badge span {
+    display: block;
+    font-size: 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--ua);
+    letter-spacing: 0.1em;
+  }
+
+  /* Session tabs */
+  .tabs {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 6px;
-    margin-bottom: 20px;
   }
 
   .tab {
-    padding: 10px 4px;
-    border-radius: 8px;
+    padding: 8px 4px;
+    border-radius: 6px;
     border: 1px solid var(--border);
     background: var(--surface);
     color: var(--muted);
@@ -136,476 +94,558 @@
     font-weight: 500;
   }
 
-  .tab.active-ua { background: #1a2200; border-color: var(--upper-a); color: var(--upper-a); }
-  .tab.active-la { background: #00181f; border-color: var(--lower-a); color: var(--lower-a); }
-  .tab.active-ub { background: #221400; border-color: var(--upper-b); color: var(--upper-b); }
-  .tab.active-lb { background: #1a0022; border-color: var(--lower-b); color: var(--lower-b); }
+  .tab.active-ua { background: #1a220055; border-color: var(--ua); color: var(--ua); }
+  .tab.active-la { background: #00181f55; border-color: var(--la); color: var(--la); }
+  .tab.active-ub { background: #22140055; border-color: var(--ub); color: var(--ub); }
+  .tab.active-lb { background: #1a002255; border-color: var(--lb); color: var(--lb); }
 
-  .session { display: none; }
+  /* Session content */
+  .session { display: none; padding: 20px; }
   .session.active { display: block; }
 
-  .session-header {
+  .session-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
+    gap: 8px;
   }
 
-  .session-badge {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 800;
-    flex-shrink: 0;
+  .session-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
   }
 
-  .session-info {}
-  .session-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 20px;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1;
-    margin-bottom: 3px;
-  }
-  .session-sub { font-size: 11px; color: var(--muted); }
-
-  .exercise {
+  /* Exercise card */
+  .exercise-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 14px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .exercise-header {
+    padding: 12px 14px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    cursor: pointer;
   }
 
-  .ex-num {
-    font-size: 11px;
-    color: var(--muted);
-    width: 18px;
-    flex-shrink: 0;
-    text-align: center;
-  }
-
-  .ex-info { flex: 1; }
-
-  .ex-name {
+  .exercise-name {
     font-size: 13px;
     font-weight: 500;
     color: var(--text);
-    margin-bottom: 3px;
   }
 
-  .ex-detail {
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .ex-sets {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 4px 8px;
-    border-radius: 5px;
-    flex-shrink: 0;
-    text-align: center;
-    line-height: 1.3;
-  }
-
-  .note {
-    background: var(--surface);
-    border-left: 3px solid var(--border);
-    border-radius: 0 6px 6px 0;
-    padding: 12px 14px;
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.6;
-    margin-top: 16px;
-  }
-
-  /* Week rotation indicator */
-  .rotation {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 28px;
-  }
-
-  .rot-week {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-  }
-
-  .rot-label {
+  .exercise-meta {
     font-size: 10px;
     color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .exercise-best {
+    font-size: 11px;
+    text-align: right;
+    color: var(--muted);
+  }
+
+  .exercise-best strong {
+    display: block;
+    font-size: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* Log form */
+  .log-form {
+    padding: 0 14px 14px;
+    display: none;
+  }
+
+  .log-form.open { display: block; }
+
+  .log-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .log-label {
+    font-size: 9px;
+    color: var(--muted);
     letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 6px;
+  }
+
+  .log-input {
+    background: var(--bg);
+    border: 1px solid var(--dim);
+    border-radius: 6px;
+    padding: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    text-align: center;
+    width: 100%;
+  }
+
+  .log-input:focus {
+    outline: none;
+    border-color: var(--muted);
+  }
+
+  .log-btn {
+    background: var(--dim);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .add-set-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed var(--dim);
+    border-radius: 6px;
+    padding: 7px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: all 0.15s;
+  }
+
+  .add-set-btn:hover { border-color: var(--muted); color: var(--text); }
+
+  /* History */
+  .history-section {
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+  }
+
+  .history-title {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
     margin-bottom: 8px;
   }
 
-  .rot-day {
+  .history-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .history-entry:last-child { border-bottom: none; margin-bottom: 0; }
+
+  .history-date { color: var(--dim); font-size: 10px; margin-top: 2px; }
+
+  .history-sets { text-align: right; }
+
+  .history-set-row { color: #666; }
+
+  .pr-badge {
+    display: inline-block;
+    background: #1a220088;
+    color: var(--ua);
+    border: 1px solid var(--ua)44;
+    border-radius: 3px;
+    font-size: 9px;
+    padding: 1px 5px;
+    letter-spacing: 0.1em;
+    margin-left: 6px;
+  }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    height: 2px;
+    background: var(--dim);
+    border-radius: 1px;
+    margin: 8px 0 0;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 1px;
+    transition: width 0.4s ease;
+  }
+
+  /* Footer nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: #0d0d0d;
+    border-top: 1px solid var(--border);
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 11px;
-    margin-bottom: 4px;
-    color: #888;
   }
 
-  .rot-day:last-child { margin-bottom: 0; }
-  .rot-day span:first-child { color: var(--muted); }
+  .nav-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .clear-btn {
+    font-size: 10px;
+    color: #333;
+    background: none;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+  }
+
+  .save-session-btn {
+    background: var(--ua);
+    color: #0a0a0a;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+  }
+
+  .chevron {
+    display: inline-block;
+    transition: transform 0.2s;
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  .chevron.open { transform: rotate(180deg); }
+
+  .no-history {
+    font-size: 11px;
+    color: var(--dim);
+    font-style: italic;
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="label">90-Day Sprint</div>
-  <h1>TRAINING<br>SPLIT</h1>
-</header>
-
-<!-- Rules -->
-<div class="rules">
-  <div class="rules-title">Session Rules</div>
-  <div class="rule"><span class="rule-num">1</span><span>5–7 exercises per session</span></div>
-  <div class="rule"><span class="rule-num">2</span><span>2–3 working sets per exercise</span></div>
-  <div class="rule"><span class="rule-num">3</span><span>Compounds: 6–10 reps</span></div>
-  <div class="rule"><span class="rule-num">4</span><span>Isolations: 10–15 reps</span></div>
-  <div class="rule"><span class="rule-num">5</span><span>Train close to failure — 0–1 RIR</span></div>
-</div>
-
-<!-- Weekly rotation -->
-<div class="label" style="margin-bottom:10px">Weekly Rotation</div>
-<div class="rotation">
-  <div class="rot-week">
-    <div class="rot-label">WEEK ODD</div>
-    <div class="rot-day"><span>Mon</span><span style="color:#C8F560">Upper A</span></div>
-    <div class="rot-day"><span>Tue</span><span style="color:#60C8F5">Lower A</span></div>
-    <div class="rot-day"><span>Thu</span><span style="color:#F5A260">Upper B</span></div>
-    <div class="rot-day"><span>Sat</span><span style="color:#C060F5">Lower B</span></div>
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div style="font-size:10px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">90-Day Sprint</div>
+      <h1>OVERLOAD<br>TRACKER</h1>
+    </div>
+    <div class="week-badge">
+      Week<span id="week-display">—</span>
+    </div>
   </div>
-  <div class="rot-week">
-    <div class="rot-label">WEEK EVEN</div>
-    <div class="rot-day"><span>Mon</span><span style="color:#F5A260">Upper B</span></div>
-    <div class="rot-day"><span>Tue</span><span style="color:#C060F5">Lower B</span></div>
-    <div class="rot-day"><span>Thu</span><span style="color:#C8F560">Upper A</span></div>
-    <div class="rot-day"><span>Sat</span><span style="color:#60C8F5">Lower A</span></div>
+  <div class="tabs">
+    <button class="tab active-ua" onclick="showSession('ua',this)">Upper A</button>
+    <button class="tab" onclick="showSession('la',this)">Lower A</button>
+    <button class="tab" onclick="showSession('ub',this)">Upper B</button>
+    <button class="tab" onclick="showSession('lb',this)">Lower B</button>
   </div>
 </div>
 
-<!-- Tabs -->
-<div class="tab-bar">
-  <button class="tab active-ua" onclick="showSession('ua', this)">Upper A</button>
-  <button class="tab" onclick="showSession('la', this)">Lower A</button>
-  <button class="tab" onclick="showSession('ub', this)">Upper B</button>
-  <button class="tab" onclick="showSession('lb', this)">Lower B</button>
-</div>
+<!-- SESSION CONTENT -->
+<div id="sess-ua" class="session active"></div>
+<div id="sess-la" class="session"></div>
+<div id="sess-ub" class="session"></div>
+<div id="sess-lb" class="session"></div>
 
-<!-- Upper A -->
-<div class="session active" id="sess-ua">
-  <div class="session-header">
-    <div class="session-badge" style="background:#1a2200;color:#C8F560">UA</div>
-    <div class="session-info">
-      <div class="session-title">Upper A</div>
-      <div class="session-sub">Pull-first · Chest emphasis</div>
-    </div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">1</div>
-    <div class="ex-info">
-      <div class="ex-name">Cable Lat Pulldown</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a220088;color:#C8F560">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">2</div>
-    <div class="ex-info">
-      <div class="ex-name">Barbell Bench Press</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a220088;color:#C8F560">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">3</div>
-    <div class="ex-info">
-      <div class="ex-name">Incline Dumbbell Press</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a220088;color:#C8F560">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">4</div>
-    <div class="ex-info">
-      <div class="ex-name">Chest-Supported DB Row</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a220088;color:#C8F560">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">5</div>
-    <div class="ex-info">
-      <div class="ex-name">Cable Lateral Raise</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a220088;color:#C8F560">3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">6</div>
-    <div class="ex-info">
-      <div class="ex-name">EZ Bar / DB Curl</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a220088;color:#C8F560">3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">7</div>
-    <div class="ex-info">
-      <div class="ex-name">Cable Tricep Pushdown</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a220088;color:#C8F560">3<br>sets</div>
-  </div>
-
-  <div class="note">Start with the pulldown before pressing to activate the scapula — sets up a stronger and safer pressing position.</div>
-</div>
-
-<!-- Lower A -->
-<div class="session" id="sess-la">
-  <div class="session-header">
-    <div class="session-badge" style="background:#00181f;color:#60C8F5">LA</div>
-    <div class="session-info">
-      <div class="session-title">Lower A</div>
-      <div class="session-sub">Squat pattern · Full lower</div>
-    </div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">1</div>
-    <div class="ex-info">
-      <div class="ex-name">Machine Adductor</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#00181f88;color:#60C8F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">2</div>
-    <div class="ex-info">
-      <div class="ex-name">Lying / Seated Leg Curl</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#00181f88;color:#60C8F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">3</div>
-    <div class="ex-info">
-      <div class="ex-name">Machine Leg Extension</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#00181f88;color:#60C8F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">4</div>
-    <div class="ex-info">
-      <div class="ex-name">Barbell Back Squat</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#00181f88;color:#60C8F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">5</div>
-    <div class="ex-info">
-      <div class="ex-name">Barbell RDL</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#00181f88;color:#60C8F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">6</div>
-    <div class="ex-info">
-      <div class="ex-name">Standing / Seated Calf Raise</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#00181f88;color:#60C8F5">2<br>sets</div>
-  </div>
-
-  <div class="note">Isolation work first to pre-fatigue and warm the joints before loading the squat and RDL.</div>
-</div>
-
-<!-- Upper B -->
-<div class="session" id="sess-ub">
-  <div class="session-header">
-    <div class="session-badge" style="background:#221400;color:#F5A260">UB</div>
-    <div class="session-info">
-      <div class="session-title">Upper B</div>
-      <div class="session-sub">OHP variation · Pec deck</div>
-    </div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">1</div>
-    <div class="ex-info">
-      <div class="ex-name">Cable Lat Pulldown</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#22140088;color:#F5A260">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">2</div>
-    <div class="ex-info">
-      <div class="ex-name">Barbell / DB Overhead Press</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#22140088;color:#F5A260">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">3</div>
-    <div class="ex-info">
-      <div class="ex-name">Pec Deck Machine</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#22140088;color:#F5A260">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">4</div>
-    <div class="ex-info">
-      <div class="ex-name">Cable Seated Row</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#22140088;color:#F5A260">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">5</div>
-    <div class="ex-info">
-      <div class="ex-name">Cable Lateral Raise</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#22140088;color:#F5A260">3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">6</div>
-    <div class="ex-info">
-      <div class="ex-name">Incline DB Curl</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#22140088;color:#F5A260">3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">7</div>
-    <div class="ex-info">
-      <div class="ex-name">Overhead Cable Tricep Ext.</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#22140088;color:#F5A260">3<br>sets</div>
-  </div>
-
-  <div class="note">OHP replaces flat/incline pressing. Pec deck hits chest through a different angle than Upper A — keeps stimulus fresh across the rotation.</div>
-</div>
-
-<!-- Lower B -->
-<div class="session" id="sess-lb">
-  <div class="session-header">
-    <div class="session-badge" style="background:#1a0022;color:#C060F5">LB</div>
-    <div class="session-info">
-      <div class="session-title">Lower B</div>
-      <div class="session-sub">Leg press · Ham emphasis</div>
-    </div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">1</div>
-    <div class="ex-info">
-      <div class="ex-name">Machine Adductor</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a002288;color:#C060F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">2</div>
-    <div class="ex-info">
-      <div class="ex-name">Lying / Seated Leg Curl</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a002288;color:#C060F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">3</div>
-    <div class="ex-info">
-      <div class="ex-name">Machine Leg Extension</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a002288;color:#C060F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">4</div>
-    <div class="ex-info">
-      <div class="ex-name">Leg Press Machine</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a002288;color:#C060F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">5</div>
-    <div class="ex-info">
-      <div class="ex-name">Barbell RDL</div>
-      <div class="ex-detail">Compound · 6–10 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a002288;color:#C060F5">2–3<br>sets</div>
-  </div>
-
-  <div class="exercise">
-    <div class="ex-num">6</div>
-    <div class="ex-info">
-      <div class="ex-name">Standing / Seated Calf Raise</div>
-      <div class="ex-detail">Isolation · 10–15 reps</div>
-    </div>
-    <div class="ex-sets" style="background:#1a002288;color:#C060F5">2<br>sets</div>
-  </div>
-
-  <div class="note">Leg press replaces the barbell squat — same quad stimulus, different pattern. Keeps Lower B distinct from Lower A while maintaining volume.</div>
+<div class="bottom-nav">
+  <div class="nav-label" id="session-date">—</div>
+  <button class="save-session-btn" onclick="saveSession()">Save Session</button>
 </div>
 
 <script>
-  function showSession(id, btn) {
-    document.querySelectorAll('.session').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => {
-      t.className = 'tab';
-    });
-    document.getElementById('sess-' + id).classList.add('active');
-    const map = { ua: 'active-ua', la: 'active-la', ub: 'active-ub', lb: 'active-lb' };
-    btn.classList.add(map[id]);
+const SESSIONS = {
+  ua: {
+    label: 'Upper A',
+    color: '#C8F560',
+    exercises: [
+      { id: 'ua_pulldown', name: 'Cable Lat Pulldown', sets: '2–3', reps: '6–10' },
+      { id: 'ua_bench', name: 'Barbell Bench Press', sets: '2–3', reps: '6–10' },
+      { id: 'ua_incline', name: 'Incline DB Press', sets: '2–3', reps: '6–10' },
+      { id: 'ua_row', name: 'Chest-Supported DB Row', sets: '2–3', reps: '6–10' },
+      { id: 'ua_lateral', name: 'Cable Lateral Raise', sets: '3', reps: '10–15' },
+      { id: 'ua_curl', name: 'EZ Bar / DB Curl', sets: '3', reps: '10–15' },
+      { id: 'ua_pushdown', name: 'Cable Tricep Pushdown', sets: '3', reps: '10–15' },
+    ]
+  },
+  la: {
+    label: 'Lower A',
+    color: '#60C8F5',
+    exercises: [
+      { id: 'la_adductor', name: 'Machine Adductor', sets: '2–3', reps: '10–15' },
+      { id: 'la_legcurl', name: 'Lying / Seated Leg Curl', sets: '2–3', reps: '10–15' },
+      { id: 'la_legext', name: 'Machine Leg Extension', sets: '2–3', reps: '10–15' },
+      { id: 'la_squat', name: 'Barbell Back Squat', sets: '2–3', reps: '6–10' },
+      { id: 'la_rdl', name: 'Barbell RDL', sets: '2–3', reps: '6–10' },
+      { id: 'la_calf', name: 'Calf Raise', sets: '2', reps: '10–15' },
+    ]
+  },
+  ub: {
+    label: 'Upper B',
+    color: '#F5A260',
+    exercises: [
+      { id: 'ub_pulldown', name: 'Cable Lat Pulldown', sets: '2–3', reps: '6–10' },
+      { id: 'ub_ohp', name: 'Barbell / DB OHP', sets: '2–3', reps: '6–10' },
+      { id: 'ub_pecdeck', name: 'Pec Deck Machine', sets: '2–3', reps: '10–15' },
+      { id: 'ub_row', name: 'Cable Seated Row', sets: '2–3', reps: '6–10' },
+      { id: 'ub_lateral', name: 'Cable Lateral Raise', sets: '3', reps: '10–15' },
+      { id: 'ub_curl', name: 'Incline DB Curl', sets: '3', reps: '10–15' },
+      { id: 'ub_tricep', name: 'Overhead Cable Tricep Ext.', sets: '3', reps: '10–15' },
+    ]
+  },
+  lb: {
+    label: 'Lower B',
+    color: '#C060F5',
+    exercises: [
+      { id: 'lb_adductor', name: 'Machine Adductor', sets: '2–3', reps: '10–15' },
+      { id: 'lb_legcurl', name: 'Lying / Seated Leg Curl', sets: '2–3', reps: '10–15' },
+      { id: 'lb_legext', name: 'Machine Leg Extension', sets: '2–3', reps: '10–15' },
+      { id: 'lb_legpress', name: 'Leg Press Machine', sets: '2–3', reps: '6–10' },
+      { id: 'lb_rdl', name: 'Barbell RDL', sets: '2–3', reps: '6–10' },
+      { id: 'lb_calf', name: 'Calf Raise', sets: '2', reps: '10–15' },
+    ]
   }
+};
+
+const START_DATE = localStorage.getItem('sprint_start') || null;
+
+function getWeek() {
+  if (!START_DATE) return '—';
+  const start = new Date(START_DATE);
+  const now = new Date();
+  const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24 * 7));
+  return diff + 1;
+}
+
+function getTodayStr() {
+  return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function getHistory(exId) {
+  return JSON.parse(localStorage.getItem('hist_' + exId) || '[]');
+}
+
+function saveHistory(exId, data) {
+  localStorage.setItem('hist_' + exId, JSON.stringify(data));
+}
+
+function getBestWeight(exId) {
+  const hist = getHistory(exId);
+  if (!hist.length) return null;
+  let best = 0;
+  hist.forEach(entry => {
+    entry.sets.forEach(s => {
+      if (parseFloat(s.weight) > best) best = parseFloat(s.weight);
+    });
+  });
+  return best > 0 ? best : null;
+}
+
+function isPR(exId, weight) {
+  const best = getBestWeight(exId);
+  return best !== null && parseFloat(weight) > best;
+}
+
+function buildSession(key) {
+  const sess = SESSIONS[key];
+  const container = document.getElementById('sess-' + key);
+  container.innerHTML = `<div class="session-label" style="color:${sess.color}">${sess.label}</div>`;
+
+  sess.exercises.forEach(ex => {
+    const hist = getHistory(ex.id);
+    const best = getBestWeight(ex.id);
+    const lastEntry = hist[hist.length - 1];
+    const lastWeight = lastEntry ? lastEntry.sets.map(s => s.weight + 'lb×' + s.reps).join(', ') : '—';
+
+    const card = document.createElement('div');
+    card.className = 'exercise-card';
+    card.innerHTML = `
+      <div class="exercise-header" onclick="toggleForm('${ex.id}')">
+        <div>
+          <div class="exercise-name">${ex.name}</div>
+          <div class="exercise-meta">${ex.sets} sets · ${ex.reps} reps</div>
+          ${best ? `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${Math.min(100,(best/200)*100)}%;background:${sess.color}44"></div></div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="exercise-best">
+            ${best ? `<strong style="color:${sess.color}">${best}lb</strong>best` : '<span style="color:var(--dim);font-size:11px">no data</span>'}
+          </div>
+          <span class="chevron" id="chev-${ex.id}">▼</span>
+        </div>
+      </div>
+      <div class="log-form" id="form-${ex.id}">
+        <div class="log-label">
+          <span>Set</span><span>Weight (lb)</span><span>Reps</span><span></span>
+        </div>
+        <div id="sets-${ex.id}">
+          ${buildSetRow(ex.id, 0)}
+          ${buildSetRow(ex.id, 1)}
+        </div>
+        <button class="add-set-btn" onclick="addSetRow('${ex.id}')">+ add set</button>
+        <div class="history-section">
+          <div class="history-title">Recent History</div>
+          ${buildHistory(ex.id, sess.color)}
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function buildSetRow(exId, index) {
+  return `
+    <div class="log-row" id="row-${exId}-${index}">
+      <div style="font-size:11px;color:var(--muted);text-align:center">${index + 1}</div>
+      <input class="log-input" type="number" placeholder="135" id="w-${exId}-${index}" inputmode="decimal" step="2.5">
+      <input class="log-input" type="number" placeholder="8" id="r-${exId}-${index}" inputmode="numeric">
+      <button class="log-btn" onclick="removeSetRow('${exId}',${index})">✕</button>
+    </div>
+  `;
+}
+
+function buildHistory(exId, color) {
+  const hist = getHistory(exId).slice(-3).reverse();
+  if (!hist.length) return '<div class="no-history">No sessions logged yet</div>';
+  return hist.map((entry, i) => {
+    const sets = entry.sets.map(s => `<div class="history-set-row">${s.weight}lb × ${s.reps} reps</div>`).join('');
+    const isLatestPR = i === 0 && entry.sets.some(s => isPR(exId, s.weight));
+    return `
+      <div class="history-entry">
+        <div>
+          <div style="color:#888;font-size:11px">${entry.date}${isLatestPR ? `<span class="pr-badge" style="color:${color}">PR</span>` : ''}</div>
+          <div class="history-date">Week ${entry.week || '—'}</div>
+        </div>
+        <div class="history-sets">${sets}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+let setCounters = {};
+
+function addSetRow(exId) {
+  if (!setCounters[exId]) setCounters[exId] = 2;
+  const idx = setCounters[exId]++;
+  const container = document.getElementById('sets-' + exId);
+  const div = document.createElement('div');
+  div.innerHTML = buildSetRow(exId, idx);
+  container.appendChild(div.firstElementChild);
+}
+
+function removeSetRow(exId, idx) {
+  const row = document.getElementById(`row-${exId}-${idx}`);
+  if (row) row.remove();
+}
+
+function toggleForm(exId) {
+  const form = document.getElementById('form-' + exId);
+  const chev = document.getElementById('chev-' + exId);
+  const isOpen = form.classList.contains('open');
+  form.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+
+function saveSession() {
+  const activeKey = document.querySelector('.session.active').id.replace('sess-', '');
+  const sess = SESSIONS[activeKey];
+  const week = getWeek();
+  const date = getTodayStr();
+  let savedCount = 0;
+
+  sess.exercises.forEach(ex => {
+    const sets = [];
+    let i = 0;
+    while (true) {
+      const wEl = document.getElementById(`w-${ex.id}-${i}`);
+      const rEl = document.getElementById(`r-${ex.id}-${i}`);
+      if (!wEl && !rEl) break;
+      if (wEl && rEl && wEl.value && rEl.value) {
+        sets.push({ weight: parseFloat(wEl.value), reps: parseInt(rEl.value) });
+      }
+      i++;
+      if (i > 20) break;
+    }
+    if (sets.length) {
+      const hist = getHistory(ex.id);
+      hist.push({ date, week, sets });
+      saveHistory(ex.id, hist);
+      savedCount++;
+    }
+  });
+
+  if (!START_DATE && savedCount > 0) {
+    localStorage.setItem('sprint_start', new Date().toISOString());
+  }
+
+  if (savedCount > 0) {
+    buildSession(activeKey);
+    document.getElementById('week-display').textContent = getWeek();
+    showToast(`${savedCount} exercise${savedCount > 1 ? 's' : ''} saved ✓`);
+  } else {
+    showToast('No data to save — fill in weights and reps first');
+  }
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a2200;color:#C8F560;border:1px solid #C8F56044;padding:10px 18px;border-radius:8px;font-size:12px;font-family:DM Mono,monospace;z-index:100;transition:opacity 0.3s;max-width:320px;text-align:center';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => t.style.opacity = '0', 2500);
+}
+
+function showSession(key, btn) {
+  document.querySelectorAll('.session').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.className = 'tab');
+  document.getElementById('sess-' + key).classList.add('active');
+  const map = { ua: 'active-ua', la: 'active-la', ub: 'active-ub', lb: 'active-lb' };
+  btn.classList.add(map[key]);
+}
+
+// Init
+document.getElementById('week-display').textContent = getWeek();
+document.getElementById('session-date').textContent = getTodayStr();
+Object.keys(SESSIONS).forEach(buildSession);
 </script>
 
 </body>
